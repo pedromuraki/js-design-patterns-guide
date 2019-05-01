@@ -43,9 +43,22 @@ class Task {
   }
 
   save() {
-    console.log('saving ' this.name);
+    console.log('saving ' + this.name);
   }
 }
+
+// same example using a function that return an object
+const Task = (name) => ({
+  name,
+  completed: false,
+
+  complete: () => {
+    this.completed = true
+  },
+  save() {
+    console.log('saving ' + this.name);
+  }
+});
 ```
 ---
 
@@ -108,22 +121,22 @@ The Factory Pattern can be especially useful when applied to the following situa
 
 ```javascript
 // Car constructor
-const Car = function (options) {
+const Car = function(options) {
   this.doors = options.doors;
   this.color = options.color;
 }
 
 // Bike constructor
-const Bike = function (options) {
+const Bike = function(options) {
   this.wheelSize = options.wheelSize;
   this.color = options.color;
 }
 
 // Factory
-const VehicleFactory = function () {
+const VehicleFactory = function() {
   this.vehicleClass;
 
-  this.createVehicle = function (options) {
+  this.createVehicle = function(options) {
     switch (options.vehicleType) {
       case 'car':
         this.vehicleClass = Car;
@@ -153,11 +166,100 @@ const redBike = factory.createVehicle({
 console.log(blueCar); // Car {doors: 4, color: "blue"}
 console.log(redBike); // Bike {wheelSize: "medium", color: "red"}
 ```
+---
 
 # Structural
-* Decorator
-* Façade
-* Flyweight
+Concerned with how objects are made up and simplify relationships between objects.
+
+* Decorator Pattern
+* Façade Pattern
+* Flyweight Pattern
+
+## Decorator Pattern
+Used to add new functionality to an existing object, without being obtrusive.
+
+```javascript
+const Task = function (name) {
+  // props
+  this.name = name;
+  this.completed = false;
+}
+
+// methods
+Task.prototype.complete = function() {
+  this.completed = true
+}
+
+Task.prototype.save = function() {
+  console.log('saving ' + this.name);
+}
+
+// decorated class
+const UrgentTask = function (name, priority) {
+  // call props from Task constructor (props with values already set ("completed"), and props with dynamic values ("name")
+  Task.call(this, name);
+  // add new props
+  this.priority = priority;
+}
+
+// add the propotype methods from Task ("complete" and "save")
+UrgentTask.prototype = Object.create(Task.prototype)
+
+// add new proptotype method(s)
+UrgentTask.prototype.doingSomething = function() {
+  console.log('doing something...');
+}
+
+// edit the "save" prototype method, change its behavior or do something different, then call original method after
+UrgentTask.prototype.save = function() {
+  this.doingSomething();
+  Task.prototype.save.call(this)
+}
+
+const urgentTask = new UrgentTask('my task name', 5)
+urgentTask.save() // doing something... / saving my task name
+
+/////////////////////////////////////////////////////////////////////////////
+
+// same example using "class" approach
+class Task {
+  constructor(name) {
+    this.name = name;
+    this.completed = false;
+  }
+
+  complete() {
+    this.completed = true
+  }
+
+  save() {
+    console.log('saving ' + this.name);
+  }
+}
+
+class UrgentTask extends Task {
+  constructor(name, priority) {
+    super(name);
+    this.priority = priority;
+  }
+
+  doingSomething() {
+    console.log('doing something...');
+  }
+
+  save() {
+    this.doingSomething();
+    super.save()
+  }
+}
+```
+---
+
+## Façade Pattern
+Used to provide a simplified interface to a complicated system.
+
+```javascript
+```
 
 # Behavioral
 * Command
