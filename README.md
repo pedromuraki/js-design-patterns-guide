@@ -259,6 +259,28 @@ class UrgentTask extends Task {
 Used to provide a simplified interface to a complicated system.
 
 ```javascript
+// simplifies an operation with a simple method
+// example 1
+const toggleClass = (el, cl) => {
+  if (el.classList.contains(cl)) {
+    el.classList.remove(cl);
+  } else {
+    el.classList.add(cl);
+  }
+}
+toggleClass($btn, 'active');
+
+// example 2
+const addEvent = (el, ev, cb) => {
+  if (el.addEventListener) {
+    el.addEventListener(ev, cb);
+  } else if (el.attachEvent) {
+    el.attachEvent(`on${ev}`, cb);
+  } else {
+    el[`on${ev}`] = cb;
+  }
+}
+addEvent($btn, 'click', () => console.log('clicked'));
 ```
 
 # Behavioral
