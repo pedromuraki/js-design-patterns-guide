@@ -173,7 +173,7 @@ Concerned with how objects are made up and simplify relationships between object
 
 * Decorator Pattern
 * Façade Pattern
-* Flyweight Pattern
+<!-- * Flyweight Pattern -->
 
 ## Decorator Pattern
 Used to add new functionality to an existing object, without being obtrusive.
@@ -332,8 +332,78 @@ music.get(3)
     .catch(e => console.error(e));
 
 ```
+---
+
+<!-- ## Flyweight Pattern
+Conserves memory by sharing portions of an object between objects.
+
+```javascript
+``` -->
 
 # Behavioral
-* Command
-* Mediator
-* Observer
+Concerned with the assignment of responsibilities between objects and how they communicate.
+
+* Observer Pattern
+* Command Pattern
+* Mediator Pattern
+
+## Observer Pattern
+Allows a collection of objects / functions to watch another object and be notified of changes.
+
+```javascript
+// Subject class
+class Subject {
+  constructor() {
+    this.observers = [];
+  }
+
+  subscribe(fn) {
+    this.observers.push(fn);
+  }
+
+  unsubscribe(fn) {
+    this.observers = this.observers.filter(subscriber => subscriber !== fn);
+  }
+
+  notifySubscribers(data) {
+    this.observers.forEach(subscriber => subscriber(data));
+  }
+}
+
+// methods that will be subscribed
+const log = data => console.log(data)
+const logUpperCase = data => console.log(data.toUpperCase())
+
+// Task class
+class Task {
+  constructor(name) {
+    this.name = name;
+    this.completed = false;
+
+    // create a new "Subject" instance for notifying/watching name change, and subscribing "log" and "logUpperCase" methods
+    this.nameSubject = new Subject()
+    this.nameSubject.subscribe(log)
+    this.nameSubject.subscribe(logUpperCase)
+  }
+
+  complete() {
+    this.completed = true
+  }
+
+  save() {
+    console.log('saving ' + this.name);
+  }
+
+  setNewName(newName) {
+    this.name = newName;
+
+    // notify the observers
+    this.nameSubject.notifySubscribers(this.name)
+  }
+}
+
+const myTask = new Task('initial name');
+console.log(myTask); // Task {name: "initial name", completed: false, nameSubject: Subject}
+myTask.setNewName('new name'); // new name / NEW NAME
+console.log(myTask); // Task {name: "new name", completed: false, nameSubject: Subject}
+```
