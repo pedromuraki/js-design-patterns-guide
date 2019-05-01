@@ -259,7 +259,6 @@ class UrgentTask extends Task {
 Used to provide a simplified interface to a complicated system.
 
 ```javascript
-// simplifies an operation with a simple method
 // example 1
 const toggleClass = (el, cl) => {
   if (el.classList.contains(cl)) {
@@ -268,6 +267,7 @@ const toggleClass = (el, cl) => {
     el.classList.add(cl);
   }
 }
+
 toggleClass($btn, 'active');
 
 // example 2
@@ -280,7 +280,57 @@ const addEvent = (el, ev, cb) => {
     el[`on${ev}`] = cb;
   }
 }
+
 addEvent($btn, 'click', () => console.log('clicked'));
+
+// example 3
+class CultureFacade {
+  constructor(type) {
+    this.type = type;
+  }
+
+  _findMusic(id) {
+    const db = new FetchMusic();
+    return db.fetch(id);
+  }
+  _findMovie(id) {
+    return new GetMovie(id);
+  }
+  _findTVShow(id) {
+    return getTvShow(id);
+  }
+  _findBook(id) {
+    return booksResource.find(item => item.id === id);
+  }
+
+  _tryToReturn(func, id) {
+    const result = func.call(this, id);
+    return new Promise((res, rej) => result
+      ? res(result)
+      : rej({ status: 404, error: 'No item with this id found' }));
+  }
+
+  get(id) {
+    switch (this.type) {
+      case 'music':
+        return this._tryToReturn(this._findMusic, id);
+      case 'movie':
+        return this._tryToReturn(this._findMovie, id);
+      case 'tv':
+        return this._tryToReturn(this._findTVShow, id);
+      case 'book':
+        return this._tryToReturn(this._findBook, id);
+      default:
+        throw new Error('No type set!');
+    }
+  }
+}
+
+const music = new CultureFacade('music');
+music.get(3)
+    .then(data => console.log(data))
+    .catch(e => console.error(e));
+
 ```
 
 # Behavioral
