@@ -1,13 +1,13 @@
-Javascript **design patterns** guide.
+A guide for Javascript **design patterns**.
 
 <!-- # Types of Patterns -->
 
 # Creational
 Patterns that deals with the creation of new instances of an object.
 
-* Constructor
-* Module
-* Factory
+* Constructor Pattern
+* Module Pattern
+* Factory Pattern
 
 ## Constructor Pattern
 Used to create new objects with their own object scope.
