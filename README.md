@@ -407,3 +407,68 @@ console.log(myTask); // Task {name: "initial name", completed: false, nameSubje
 myTask.setNewName('new name'); // new name / NEW NAME
 console.log(myTask); // Task {name: "new name", completed: false, nameSubject: Subject}
 ```
+---
+
+## PubSub Pattern
+Similar to "Observer Pattern". Used to create custom events that when emitted, triggers subscribed callbacks.
+
+```javascript
+// EventEmitter class
+class EventEmitter {
+  constructor() {
+    this.events = {};
+  }
+
+  on(event, fn) {
+    if (!this.events[event]) this.events[event] = []
+    this.events[event].push(fn)
+  }
+
+  emit(event, payload) {
+    const fns = this.events[event]
+    if (fns) fns.forEach(fn => fn(payload))
+  }
+}
+
+// methods that will be subscribed
+const log = data => console.log(data)
+const logUpperCase = data => console.log(data.toUpperCase())
+const warning = () => console.log('the name is empty!')
+
+// Task class
+class Task {
+  constructor(name) {
+    this.name = name;
+    this.completed = false;
+
+    // create an instance of the EventEmitter class, then add listeners to custom events
+    this.eventEmitter = new EventEmitter()
+    this.eventEmitter.on('nameChanged', log)
+    this.eventEmitter.on('nameChanged', logUpperCase)
+    this.eventEmitter.on('nameRemoved', warning)
+  }
+
+  complete() {
+    this.completed = true
+  }
+
+  save() {
+    console.log('saving ' + this.name);
+  }
+
+  setNewName(newName) {
+    this.name = newName;
+
+    // trigger/emit custom events
+    if (this.name === '') {
+      this.eventEmitter.emit('nameRemoved')
+    } else {
+      this.eventEmitter.emit('nameChanged', this.name)
+    }
+  }
+}
+
+const myTask = new Task('name of my task');
+myTask.setNewName(''); // the name is empty!
+myTask.setNewName('the new name of my task'); // the new name of my task / THE NEW NAME OF MY TASK
+```
